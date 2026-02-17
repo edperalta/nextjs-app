@@ -1,214 +1,66 @@
-# Next.js Production-Grade Application
+# nextjs-app
 
-A scalable, production-grade Next.js application built with Clean Architecture, SOLID principles, and modern best practices.
+Interfaz de chat con un agente usando un prompt predefinido.
 
-## Architecture
+## 🚀 Características
 
-This application follows the **Controller-Service-Repository** pattern with **Clean Architecture** principles:
+- **Interfaz de chat moderna y responsive** con diseño limpio
+- **Prompt predefinido** para el agente: "Eres un asistente amigable y útil. Tu objetivo es ayudar a los usuarios con sus preguntas y proporcionarles información precisa y útil. Responde siempre en español de manera clara y concisa."
+- **Componentes modulares** (ChatInterface, ChatMessage, ChatInput)
+- **Timestamps** en cada mensaje
+- **Indicador de escritura animado** cuando el agente está respondiendo
+- **Auto-scroll** automático a nuevos mensajes
 
-### Layers
+## 🛠️ Tecnologías
 
-1. **Controllers** (`src/lib/controllers/`)
-   - Handle HTTP requests and responses only
-   - Validate input data using Zod schemas
-   - Delegate business logic to services
-   - Return standardized API responses
+- [Next.js 16](https://nextjs.org/) con App Router
+- [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
 
-2. **Services** (`src/lib/services/`)
-   - Implement business logic and rules
-   - Coordinate between controllers and repositories
-   - Handle data transformation and validation
-   - Throw appropriate domain errors
-
-3. **Repositories** (`src/lib/repositories/`)
-   - Handle data access and persistence
-   - Abstract data source implementation
-   - Provide CRUD operations
-   - Currently using in-memory storage (easily replaceable with databases)
-
-4. **DTOs** (`src/lib/dto/`)
-   - Define data transfer objects
-   - Validate data with Zod schemas
-   - Establish clear boundaries between layers
-
-### Directory Structure
-
-```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── api/               # API routes
-│   │   └── users/        # User endpoints
-│   ├── users/            # Users page
-│   ├── layout.tsx        # Root layout
-│   ├── page.tsx          # Home page
-│   └── globals.css       # Global styles
-├── components/            # React components
-│   ├── ui/               # shadcn/ui components
-│   ├── users-table.tsx   # Users table with TanStack Table
-│   └── user-form.tsx     # User form with React Hook Form
-└── lib/                   # Core business logic
-    ├── controllers/       # HTTP controllers
-    ├── services/          # Business services
-    ├── repositories/      # Data repositories
-    ├── dto/              # Data Transfer Objects
-    ├── types/            # TypeScript types
-    └── utils/            # Utility functions
-```
-
-## Tech Stack
-
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
-- **Data Tables**: TanStack Table
-- **Forms**: React Hook Form
-- **Validation**: Zod
-- **State Management**: React Hooks
-
-## Features
-
-- ✅ **Strong Typing**: No `any` types, strict TypeScript configuration
-- ✅ **DTO Boundaries**: Clear data validation at boundaries
-- ✅ **Error Handling**: Graceful error handling with custom error classes
-- ✅ **Responsive UI**: Mobile-first responsive design
-- ✅ **Optimistic Updates**: Immediate UI feedback on user actions
-- ✅ **Clean Architecture**: Separation of concerns
-- ✅ **SOLID Principles**: Single responsibility, dependency inversion, etc.
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ 
-- npm or yarn
-
-### Installation
+## 📦 Instalación
 
 ```bash
-# Install dependencies
+# Instalar dependencias
 npm install
 
-# Run development server
+# Ejecutar en modo desarrollo
 npm run dev
 
-# Build for production
+# Construir para producción
 npm run build
 
-# Start production server
+# Iniciar servidor de producción
 npm start
-
-# Run linter
-npm run lint
-
-# Run type checking
-npm run type-check
 ```
 
-### Development
+## 🎯 Uso
 
-The app will be available at [http://localhost:3000](http://localhost:3000)
+1. Abre tu navegador en `http://localhost:3000`
+2. Escribe tu mensaje en el campo de entrada
+3. Presiona "Enviar" o Enter para enviar el mensaje
+4. El agente responderá basándose en el prompt predefinido
 
-- Home page: `/`
-- Users page: `/users`
-- API endpoints: `/api/users`
+## 📸 Screenshots
 
-## API Endpoints
+### Interfaz inicial
+![Interfaz inicial](https://github.com/user-attachments/assets/7d5e8c10-28f2-49ca-9444-53844ddea9bf)
 
-### Users
+### Chat en acción
+![Chat con mensajes](https://github.com/user-attachments/assets/b9584682-a617-4ce3-b2fe-2b2a26211b0c)
 
-- `GET /api/users` - Get all users
-- `POST /api/users` - Create a new user
-- `GET /api/users/:id` - Get user by ID
-- `PATCH /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
+## 🔮 Próximos pasos
 
-### Request/Response Format
+Actualmente, la respuesta del agente está simulada. Para integrar con una API de IA real:
 
-All API responses follow this structure:
+1. Agregar variables de entorno para la clave API
+2. Implementar un endpoint API en `/app/api/chat/route.ts`
+3. Integrar con servicios como:
+   - [OpenAI API](https://platform.openai.com/)
+   - [Anthropic Claude](https://www.anthropic.com/)
+   - [Google Gemini](https://ai.google.dev/)
+   - O cualquier otro proveedor de LLM
 
-```typescript
-{
-  success: boolean;
-  data?: T;
-  error?: {
-    message: string;
-    code?: string;
-    details?: any;
-  };
-  meta?: {
-    timestamp: string;
-  };
-}
-```
+## 📄 Licencia
 
-## Code Standards
-
-### TypeScript
-
-- Strict mode enabled
-- No `any` types allowed
-- All functions must have explicit return types
-- Use interfaces for public APIs, types for internal use
-
-### Error Handling
-
-- Use custom error classes (AppError, ValidationError, NotFoundError, etc.)
-- All errors are caught and transformed into standardized responses
-- Zod validation errors are automatically handled
-
-### Naming Conventions
-
-- **Files**: kebab-case (e.g., `user.service.ts`)
-- **Classes**: PascalCase (e.g., `UserService`)
-- **Functions**: camelCase (e.g., `getUsers`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `API_BASE_URL`)
-
-## Testing
-
-The application is structured to be easily testable:
-
-- Controllers can be tested independently with mock services
-- Services can be tested with mock repositories
-- Repositories can be tested with mock data sources
-
-## Extending the Application
-
-### Adding a New Feature
-
-1. **Define the entity type** in `src/lib/types/`
-2. **Create DTOs** with Zod schemas in `src/lib/dto/`
-3. **Implement repository** extending `InMemoryRepository` in `src/lib/repositories/`
-4. **Implement service** extending `BaseService` in `src/lib/services/`
-5. **Implement controller** extending `BaseController` in `src/lib/controllers/`
-6. **Create API routes** in `src/app/api/`
-7. **Build UI components** using shadcn/ui components
-
-### Replacing In-Memory Storage
-
-To replace the in-memory storage with a real database:
-
-1. Install database client (e.g., Prisma, Drizzle)
-2. Create new repository implementations
-3. Update service constructors to use new repositories
-4. No changes needed to controllers or UI
-
-## Production Considerations
-
-- Replace in-memory storage with a real database
-- Add authentication and authorization
-- Implement rate limiting
-- Add logging and monitoring
-- Set up CI/CD pipeline
-- Configure environment variables
-- Add comprehensive tests
-- Enable HTTPS
-- Set up error tracking (e.g., Sentry)
-
-## License
-
-MIT
-
-## Author
-
-Built with ❤️ following Clean Architecture principles
+ISC
