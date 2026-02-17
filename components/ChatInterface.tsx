@@ -78,8 +78,8 @@ export default function ChatInterface() {
         {isLoading && (
           <div className="flex items-center space-x-2 text-gray-500">
             <div className="animate-pulse">●</div>
-            <div className="animate-pulse animation-delay-200">●</div>
-            <div className="animate-pulse animation-delay-400">●</div>
+            <div className="animate-pulse" style={{ animationDelay: '0.2s' }}>●</div>
+            <div className="animate-pulse" style={{ animationDelay: '0.4s' }}>●</div>
             <span className="text-sm">El asistente está escribiendo...</span>
           </div>
         )}
