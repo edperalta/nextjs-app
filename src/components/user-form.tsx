@@ -1,18 +1,19 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select } from "@/components/ui/select"
 import {
   CreateUserDto,
   createUserSchema,
   updateUserSchema,
   UserResponseDto,
-} from "@/lib/dto/user.dto";
+} from "@/lib/dto/user.dto"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as React from "react"
+import { useForm } from "react-hook-form"
 
 interface UserFormProps {
   user?: UserResponseDto;
@@ -21,8 +22,8 @@ interface UserFormProps {
 }
 
 export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
-  const [error, setError] = React.useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const {
     register,
@@ -39,86 +40,129 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
       : {
           name: "",
           email: "",
-          role: "user",
+          role: "USER",
         },
-  });
+  })
 
   const onFormSubmit = async (data: CreateUserDto) => {
     try {
-      setError(null);
-      setIsSubmitting(true);
-      await onSubmit(data);
+      setError(null)
+      setIsSubmitting(true)
+      await onSubmit(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+      setError(err instanceof Error ? err.message : "An error occurred")
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
       {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+        <Alert variant="destructive" className="border-2">
+          <AlertDescription className="flex items-center gap-2">
+            <span>⚠️</span>
+            {error}
+          </AlertDescription>
         </Alert>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          {...register("name")}
-          placeholder="John Doe"
-          disabled={isSubmitting}
-        />
-        {errors.name && (
-          <p className="text-sm text-destructive">{errors.name.message}</p>
-        )}
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-2 sm:col-span-2">
+          <Label
+            htmlFor="name"
+            className="text-sm font-semibold flex items-center gap-1"
+          >
+            👤 Name
+          </Label>
+          <Input
+            id="name"
+            {...register("name")}
+            placeholder="John Doe"
+            disabled={isSubmitting}
+            className="h-11"
+          />
+          {errors.name && (
+            <p className="text-sm text-destructive flex items-center gap-1">
+              <span>•</span>
+              {errors.name.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2 sm:col-span-2">
+          <Label
+            htmlFor="email"
+            className="text-sm font-semibold flex items-center gap-1"
+          >
+            📧 Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            {...register("email")}
+            placeholder="john.doe@example.com"
+            disabled={isSubmitting}
+            className="h-11"
+          />
+          {errors.email && (
+            <p className="text-sm text-destructive flex items-center gap-1">
+              <span>•</span>
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label
+            htmlFor="role"
+            className="text-sm font-semibold flex items-center gap-1"
+          >
+            🎭 Role
+          </Label>
+          <Select
+            id="role"
+            {...register("role")}
+            disabled={isSubmitting}
+            className="h-11"
+          >
+            <option value="USER">👤 User</option>
+            <option value="ADMIN">👑 Admin</option>
+          </Select>
+          {errors.role && (
+            <p className="text-sm text-destructive flex items-center gap-1">
+              <span>•</span>
+              {errors.role.message}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          {...register("email")}
-          placeholder="john.doe@example.com"
-          disabled={isSubmitting}
-        />
-        {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="role">Role</Label>
-        <select
-          id="role"
-          {...register("role")}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-          disabled={isSubmitting}
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-        {errors.role && (
-          <p className="text-sm text-destructive">{errors.role.message}</p>
-        )}
-      </div>
-
-      <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : user ? "Update User" : "Create User"}
-        </Button>
+      <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
+          className="w-full sm:w-auto h-11"
         >
           Cancel
         </Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full sm:flex-1 sm:max-w-xs h-11"
+        >
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent" />
+              Saving...
+            </span>
+          ) : (
+            <span>{user ? "💾 Update User" : "➕ Create User"}</span>
+          )}
+        </Button>
       </div>
     </form>
-  );
+  )
 }

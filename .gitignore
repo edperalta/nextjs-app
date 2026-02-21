@@ -70,6 +70,10 @@ web_modules/
 .env.*
 !.env.example
 
+# Prisma
+node_modules/.prisma
+prisma/migrations/.migration_lock
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -137,3 +141,5 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+/src/generated/prisma

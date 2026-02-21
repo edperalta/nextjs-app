@@ -1,0 +1,94 @@
+// Prisma Schema - MySQL Database
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Model (extended for better-auth)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String    @db.VarChar(100)
+  email         String    @unique @db.VarChar(255)
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image         String?   @db.Text
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  sessions Session[]
+  accounts Account[]
+
+  @@map("users")
+  @@index([email])
+}
+
+// ============================================
+// Auth Models (better-auth)
+// ============================================
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @db.VarChar(45) @map("ip_address")
+  userAgent String?  @db.Text @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                   String    @id @default(cuid())
+  accountId            String    @map("account_id") @db.VarChar(255)
+  providerId           String    @map("provider_id") @db.VarChar(100)
+  userId               String    @map("user_id")
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken          String?   @db.Text @map("access_token")
+  refreshToken         String?   @db.Text @map("refresh_token")
+  idToken              String?   @db.Text @map("id_token")
+  accessTokenExpiresAt DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                String?   @db.VarChar(500)
+  password             String?   @db.Text
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@map("accounts")
+  @@index([userId])
+  @@index([providerId, accountId])
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String    @db.VarChar(255)
+  value      String    @db.Text
+  expiresAt  DateTime  @map("expires_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  @@map("verifications")
+  @@index([identifier])
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum UserRole {
+  ADMIN
+  USER
+}

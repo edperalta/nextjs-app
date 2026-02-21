@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { handleError, createSuccessResponse } from "../utils/response";
+import { NextRequest, NextResponse } from "next/server"
+import { createSuccessResponse, handleError } from "../utils/response"
 
 /**
  * Base Controller
@@ -13,9 +13,9 @@ export abstract class BaseController {
     handler: () => Promise<NextResponse>
   ): Promise<NextResponse> {
     try {
-      return await handler();
+      return await handler()
     } catch (error) {
-      return handleError(error);
+      return handleError(error)
     }
   }
 
@@ -23,20 +23,20 @@ export abstract class BaseController {
    * Create success response with data
    */
   protected success<T>(data: T, status = 200): NextResponse {
-    return NextResponse.json(createSuccessResponse(data), { status });
+    return NextResponse.json(createSuccessResponse(data), { status })
   }
 
   /**
    * Get query parameters from URL
    */
   protected getQueryParams(request: NextRequest): URLSearchParams {
-    return new URL(request.url).searchParams;
+    return new URL(request.url).searchParams
   }
 
   /**
    * Parse request body as JSON
    */
   protected async getBody<T>(request: NextRequest): Promise<T> {
-    return await request.json();
+    return await request.json()
   }
 }

@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import { AppError, ValidationError } from "./errors";
-import { ZodError } from "zod";
+import { NextResponse } from "next/server"
+import { AppError, ValidationError } from "./errors"
+import { ZodError } from "zod"
 
 /**
  * Standard API response structure
@@ -28,7 +28,7 @@ export function createSuccessResponse<T>(data: T): ApiResponse<T> {
     meta: {
       timestamp: new Date().toISOString(),
     },
-  };
+  }
 }
 
 /**
@@ -49,7 +49,7 @@ export function createErrorResponse(
     meta: {
       timestamp: new Date().toISOString(),
     },
-  };
+  }
 }
 
 /**
@@ -59,16 +59,16 @@ export function handleError(error: unknown): NextResponse {
   // Handle Zod validation errors
   if (error instanceof ZodError) {
     const errors = error.errors.reduce((acc, err) => {
-      const path = err.path.join(".");
-      if (!acc[path]) acc[path] = [];
-      acc[path].push(err.message);
-      return acc;
-    }, {} as Record<string, string[]>);
+      const path = err.path.join(".")
+      if (!acc[path]) acc[path] = []
+      acc[path].push(err.message)
+      return acc
+    }, {} as Record<string, string[]>)
 
     return NextResponse.json(
       createErrorResponse("Validation failed", "VALIDATION_ERROR", errors),
       { status: 400 }
-    );
+    )
   }
 
   // Handle custom app errors
@@ -76,18 +76,18 @@ export function handleError(error: unknown): NextResponse {
     return NextResponse.json(
       createErrorResponse(error.message, error.code, error.errors),
       { status: error.statusCode }
-    );
+    )
   }
 
   if (error instanceof AppError) {
     return NextResponse.json(
       createErrorResponse(error.message, error.code),
       { status: error.statusCode }
-    );
+    )
   }
 
   // Handle unknown errors
-  console.error("Unhandled error:", error);
+  console.error("Unhandled error:", error)
   return NextResponse.json(
     createErrorResponse(
       "Internal server error",
@@ -95,5 +95,5 @@ export function handleError(error: unknown): NextResponse {
       process.env.NODE_ENV === "development" ? error : undefined
     ),
     { status: 500 }
-  );
+  )
 }

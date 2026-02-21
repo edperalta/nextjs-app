@@ -1,71 +1,80 @@
-import { InMemoryRepository } from "./base.repository";
-import { User } from "../types/user.types";
+import { prisma } from "@/lib/db/prisma"
+import { Prisma, UserRole } from "@prisma/client"
+import { User } from "../types/user.types"
+import { ConflictError, NotFoundError } from "../utils/errors"
 
 /**
- * User Repository
- * Handles data access for User entities
+ * User Repository — Prisma implementation
+ * All query logic lives here; no business rules.
  */
-export class UserRepository extends InMemoryRepository<User, string> {
-  private static instance: UserRepository;
-
-  private constructor() {
-    super();
-    // Seed with sample data
-    this.seedData();
-  }
+export class UserRepository {
+  private static instance: UserRepository
 
   static getInstance(): UserRepository {
     if (!UserRepository.instance) {
-      UserRepository.instance = new UserRepository();
+      UserRepository.instance = new UserRepository()
     }
-    return UserRepository.instance;
+    return UserRepository.instance
   }
 
-  protected generateId(): string {
-    this.idCounter++;
-    return `user-${this.idCounter}`;
+  async findAll(): Promise<User[]> {
+    return prisma.user.findMany({ orderBy: { createdAt: "desc" } })
   }
 
-  /**
-   * Find user by email
-   */
+  async findById(id: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { id } })
+  }
+
   async findByEmail(email: string): Promise<User | null> {
-    const users = await this.findAll();
-    return users.find((user) => user.email === email) ?? null;
+    return prisma.user.findUnique({ where: { email } })
   }
 
-  /**
-   * Seed initial data
-   */
-  private seedData(): void {
-    const now = new Date();
-    const users: User[] = [
-      {
-        id: this.generateId(),
-        name: "John Doe",
-        email: "john.doe@example.com",
-        role: "admin",
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        id: this.generateId(),
-        name: "Jane Smith",
-        email: "jane.smith@example.com",
-        role: "user",
-        createdAt: now,
-        updatedAt: now,
-      },
-      {
-        id: this.generateId(),
-        name: "Bob Johnson",
-        email: "bob.johnson@example.com",
-        role: "user",
-        createdAt: now,
-        updatedAt: now,
-      },
-    ];
+  async create(data: {
+    name: string;
+    email: string;
+    role: UserRole;
+  }): Promise<User> {
+    try {
+      return await prisma.user.create({ data })
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2002"
+      ) {
+        throw new ConflictError("A user with this email already exists")
+      }
+      throw e
+    }
+  }
 
-    users.forEach((user) => this.items.set(user.id, user));
+  async update(
+    id: string,
+    data: Partial<{ name: string; email: string; role: UserRole }>
+  ): Promise<User> {
+    try {
+      return await prisma.user.update({ where: { id }, data })
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2025") throw new NotFoundError(`User ${id} not found`)
+        if (e.code === "P2002")
+          throw new ConflictError("A user with this email already exists")
+      }
+      throw e
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      await prisma.user.delete({ where: { id } })
+    } catch (e) {
+      if (
+        e instanceof Prisma.PrismaClientKnownRequestError &&
+        e.code === "P2025"
+      ) {
+        throw new NotFoundError(`User ${id} not found`)
+      }
+      throw e
+    }
   }
 }
+

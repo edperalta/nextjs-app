@@ -1,16 +1,15 @@
 /**
- * User entity type
+ * User entity type — mirrors Prisma User model
  */
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "user";
+  emailVerified: boolean;
+  image: string | null;
+  role: "ADMIN" | "USER";
   createdAt: Date;
   updatedAt: Date;
 }
 
-/**
- * User status enum
- */
-export type UserRole = "admin" | "user";
+export type UserRole = "ADMIN" | "USER";
