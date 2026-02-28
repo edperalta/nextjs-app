@@ -2,12 +2,13 @@ import { prisma } from "@/lib/db/prisma"
 import { Prisma, UserRole } from "@prisma/client"
 import { User } from "../types/user.types"
 import { ConflictError, NotFoundError } from "../utils/errors"
+import { IRepository } from "./base.repository"
 
 /**
  * User Repository — Prisma implementation
  * All query logic lives here; no business rules.
  */
-export class UserRepository {
+export class UserRepository implements IRepository<User> {
   private static instance: UserRepository
 
   static getInstance(): UserRepository {

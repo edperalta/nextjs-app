@@ -15,20 +15,22 @@ datasource db {
 // ============================================
 
 model User {
-  id            String    @id @default(cuid())
-  name          String    @db.VarChar(100)
-  email         String    @unique @db.VarChar(255)
-  emailVerified Boolean   @default(false) @map("email_verified")
-  image         String?   @db.Text
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  name          String   @db.VarChar(100)
+  email         String   @unique @db.VarChar(255)
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?  @db.Text
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  sessions Session[]
-  accounts Account[]
+  sessions  Session[]
+  accounts  Account[]
+  recipes   Recipe[]
+  mealPlans MealPlan[]
 
-  @@map("users")
   @@index([email])
+  @@map("users")
 }
 
 // ============================================
@@ -41,35 +43,35 @@ model Session {
   token     String   @unique @db.VarChar(255)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  ipAddress String?  @db.VarChar(45) @map("ip_address")
-  userAgent String?  @db.Text @map("user_agent")
+  ipAddress String?  @map("ip_address") @db.VarChar(45)
+  userAgent String?  @map("user_agent") @db.Text
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("sessions")
   @@index([userId])
   @@index([token])
+  @@map("sessions")
 }
 
 model Account {
-  id                   String    @id @default(cuid())
-  accountId            String    @map("account_id") @db.VarChar(255)
-  providerId           String    @map("provider_id") @db.VarChar(100)
-  userId               String    @map("user_id")
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken          String?   @db.Text @map("access_token")
-  refreshToken         String?   @db.Text @map("refresh_token")
-  idToken              String?   @db.Text @map("id_token")
-  accessTokenExpiresAt DateTime? @map("access_token_expires_at")
+  id                    String    @id @default(cuid())
+  accountId             String    @map("account_id") @db.VarChar(255)
+  providerId            String    @map("provider_id") @db.VarChar(100)
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token") @db.Text
+  refreshToken          String?   @map("refresh_token") @db.Text
+  idToken               String?   @map("id_token") @db.Text
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
   refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
-  scope                String?   @db.VarChar(500)
-  password             String?   @db.Text
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
+  scope                 String?   @db.VarChar(500)
+  password              String?   @db.Text
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
-  @@map("accounts")
   @@index([userId])
   @@index([providerId, accountId])
+  @@map("accounts")
 }
 
 model Verification {
@@ -80,8 +82,8 @@ model Verification {
   createdAt  DateTime? @default(now()) @map("created_at")
   updatedAt  DateTime? @updatedAt @map("updated_at")
 
-  @@map("verifications")
   @@index([identifier])
+  @@map("verifications")
 }
 
 // ============================================
@@ -91,4 +93,154 @@ model Verification {
 enum UserRole {
   ADMIN
   USER
+}
+
+// ============================================
+// Recipe Domain Enums
+// ============================================
+
+enum RecipeCategory {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+  DESSERT
+  APPETIZER
+  SOUP
+  SALAD
+  BEVERAGE
+}
+
+enum HealthScore {
+  VERY_HEALTHY
+  HEALTHY
+  MODERATE
+  INDULGENT
+}
+
+enum Unit {
+  GRAMS
+  MILLILITERS
+  PIECES
+  TABLESPOON
+  TEASPOON
+  CUP
+  KILOGRAM
+  LITER
+  OUNCE
+  POUND
+  SLICE
+  PINCH
+  TO_TASTE
+}
+
+// ============================================
+// Recipe Domain Models
+// ============================================
+
+model Recipe {
+  id           String             @id @default(cuid())
+  title        String             @db.VarChar(200)
+  description  String?            @db.Text
+  instructions String             @db.LongText
+  servings     Int                @default(1)
+  prepTimeMin  Int?               @map("prep_time_min")
+  cookTimeMin  Int?               @map("cook_time_min")
+  category     RecipeCategory
+  healthScore  HealthScore        @map("health_score")
+  userId       String             @map("user_id")
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients     RecipeIngredient[]
+  mealPlanEntries MealPlanEntry[]
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  deletedAt    DateTime?          @map("deleted_at")
+
+  @@index([userId])
+  @@index([category])
+  @@index([healthScore])
+  @@index([deletedAt])
+  @@map("recipes")
+}
+
+model Ingredient {
+  id          String             @id @default(cuid())
+  name        String             @unique @db.VarChar(100)
+  defaultUnit Unit               @map("default_unit")
+  recipes     RecipeIngredient[]
+
+  @@index([name])
+  @@map("ingredients")
+}
+
+model RecipeIngredient {
+  id           String     @id @default(cuid())
+  recipeId     String     @map("recipe_id")
+  ingredientId String     @map("ingredient_id")
+  quantity     Float
+  unit         Unit
+  recipe       Recipe     @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@unique([recipeId, ingredientId])
+  @@index([recipeId])
+  @@index([ingredientId])
+  @@map("recipe_ingredients")
+}
+
+// ============================================
+// Meal Planning Domain Enums
+// ============================================
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+// ============================================
+// Meal Planning Domain Models
+// ============================================
+
+model MealPlan {
+  id            String          @id @default(cuid())
+  name          String          @db.VarChar(200)
+  weekStartDate DateTime        @map("week_start_date") @db.Date
+  servings      Int
+  userId        String          @map("user_id")
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries       MealPlanEntry[]
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  deletedAt     DateTime?       @map("deleted_at")
+
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("meal_plans")
+}
+
+model MealPlanEntry {
+  id         String    @id @default(cuid())
+  mealPlanId String    @map("meal_plan_id")
+  dayOfWeek  DayOfWeek @map("day_of_week")
+  mealType   MealType  @map("meal_type")
+  recipeId   String    @map("recipe_id")
+  mealPlan   MealPlan  @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  recipe     Recipe    @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+
+  @@unique([mealPlanId, dayOfWeek, mealType])
+  @@index([mealPlanId])
+  @@index([recipeId])
+  @@map("meal_plan_entries")
 }

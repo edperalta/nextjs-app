@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from "next/server"
 const PROTECTED_PATHS = ["/users", "/chat"]
 const AUTH_PATHS = ["/login", "/register"]
 
-export async function middleware(request: NextRequest): Promise<NextResponse> {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
     const { pathname } = request.nextUrl
 
     const { data: session } = await betterFetch<Session>(

@@ -1,4 +1,4 @@
-import ChatInterface from "@/components/chat-components/ChatInterface"
+import ChatInterface from "@/app/chat/components/ChatInterface"
 import { Navbar } from "@/components/navbar"
 
 export default function ChatPage() {

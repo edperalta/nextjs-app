@@ -28,6 +28,7 @@ export function Navbar() {
     { href: "/", label: "Home" },
     { href: "/users", label: "Users" },
     { href: "/chat", label: "Chat" },
+    { href: "/recipes", label: "Recipes" },
   ]
 
   async function handleSignOut() {
