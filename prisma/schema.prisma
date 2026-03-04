@@ -1,13 +1,15 @@
-// Prisma Schema - MySQL Database
+// Prisma Schema - PostgreSQL Database
 // Documentation: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 // ============================================
@@ -142,13 +144,15 @@ model Recipe {
   id           String             @id @default(cuid())
   title        String             @db.VarChar(200)
   description  String?            @db.Text
-  instructions String             @db.LongText
+  instructions String             @db.Text
   servings     Int                @default(1)
   prepTimeMin  Int?               @map("prep_time_min")
   cookTimeMin  Int?               @map("cook_time_min")
   category     RecipeCategory
   healthScore  HealthScore        @map("health_score")
   userId       String             @map("user_id")
+  // Semantic search embedding (1536 dims — OpenAI text-embedding-3-small)
+  embedding    Unsupported("vector(1536)")? @map("embedding")
   user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   ingredients     RecipeIngredient[]
   mealPlanEntries MealPlanEntry[]
@@ -192,16 +196,6 @@ model RecipeIngredient {
 // Meal Planning Domain Enums
 // ============================================
 
-enum DayOfWeek {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
-}
-
 enum MealType {
   BREAKFAST
   LUNCH
@@ -214,10 +208,11 @@ enum MealType {
 // ============================================
 
 model MealPlan {
-  id            String          @id @default(cuid())
-  name          String          @db.VarChar(200)
-  weekStartDate DateTime        @map("week_start_date") @db.Date
-  servings      Int
+  id        String          @id @default(cuid())
+  name      String          @db.VarChar(200)
+  startDate DateTime        @map("start_date") @db.Date
+  endDate   DateTime        @map("end_date") @db.Date
+  servings  Int
   userId        String          @map("user_id")
   user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   entries       MealPlanEntry[]
@@ -231,15 +226,15 @@ model MealPlan {
 }
 
 model MealPlanEntry {
-  id         String    @id @default(cuid())
-  mealPlanId String    @map("meal_plan_id")
-  dayOfWeek  DayOfWeek @map("day_of_week")
-  mealType   MealType  @map("meal_type")
-  recipeId   String    @map("recipe_id")
-  mealPlan   MealPlan  @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
-  recipe     Recipe    @relation(fields: [recipeId], references: [id], onDelete: Restrict)
+  id         String   @id @default(cuid())
+  mealPlanId String   @map("meal_plan_id")
+  planDate   DateTime @map("plan_date") @db.Date
+  mealType   MealType @map("meal_type")
+  recipeId   String   @map("recipe_id")
+  mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  recipe     Recipe   @relation(fields: [recipeId], references: [id], onDelete: Restrict)
 
-  @@unique([mealPlanId, dayOfWeek, mealType])
+  @@unique([mealPlanId, planDate, mealType])
   @@index([mealPlanId])
   @@index([recipeId])
   @@map("meal_plan_entries")

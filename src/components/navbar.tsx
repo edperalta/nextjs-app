@@ -3,12 +3,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
 import { signOut, useSession } from "@/lib/auth/auth-client"
@@ -27,8 +27,9 @@ export function Navbar() {
   const links = [
     { href: "/", label: "Home" },
     { href: "/users", label: "Users" },
-    { href: "/chat", label: "Chat" },
     { href: "/recipes", label: "Recipes" },
+    { href: "/meal-plans", label: "Meal Plans" },
+    { href: "/chat", label: "Chat" },
   ]
 
   async function handleSignOut() {

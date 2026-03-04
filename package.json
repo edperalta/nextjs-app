@@ -24,6 +24,7 @@
     "prisma:studio": "prisma studio",
     "prisma:reset": "prisma migrate reset",
     "prisma:seed": "prisma db seed",
+    "seed:run": "tsx prisma/seed.ts",
     "db:push": "prisma db push",
     "db:pull": "prisma db pull",
     "postinstall": "prisma generate"
@@ -39,9 +40,6 @@
     "url": "https://github.com/edperalta/nextjs-app/issues"
   },
   "homepage": "https://github.com/edperalta/nextjs-app#readme",
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^5.22.0",

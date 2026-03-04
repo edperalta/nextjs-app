@@ -2,34 +2,31 @@
 
 This directory contains Docker-related configuration for the Next.js application.
 
-## MySQL Initialization
+## PostgreSQL Initialization
 
-Place SQL scripts in `mysql/init/` directory. They will be executed automatically when the MySQL container starts for the first time, in alphabetical order.
+Place SQL scripts in `postgres/init/` directory. They will be executed automatically when the PostgreSQL container starts for the first time, in alphabetical order.
 
 Example:
 ```sql
--- ./mysql/init/01-create-tables.sql
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- ./postgres/init/02-seed.sql
+INSERT INTO users (name, email) VALUES ('Admin', 'admin@example.com');
 ```
 
 ## Usage
 
 1. Start the database:
    ```bash
-   docker-compose up -d mysql
+   docker-compose up -d postgres
    ```
 
-2. Start with phpMyAdmin (optional):
+2. Start with pgAdmin (optional):
    ```bash
-   docker-compose up -d mysql phpmyadmin
+   docker-compose up -d postgres pgadmin
    ```
 
-3. Access phpMyAdmin at: http://localhost:8080
+3. Access pgAdmin at: http://localhost:8080
+   - Default email: `admin@example.com`
+   - Default password: `admin_password`
 
 ## Environment Variables
 

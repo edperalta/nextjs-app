@@ -73,7 +73,7 @@ export const recipeFiltersSchema = z.object({
   category: recipeCategorySchema.optional(),
   healthScore: healthScoreSchema.optional(),
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
+  limit: z.coerce.number().int().min(1).max(2000).default(10),
 })
 
 // ── Inferred types ─────────────────────────────────────────────────────────────
