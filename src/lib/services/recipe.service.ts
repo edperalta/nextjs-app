@@ -1,13 +1,13 @@
 import { HealthScore, RecipeCategory } from "@prisma/client"
 import {
-    CreateRecipeDto,
-    HealthScoreEnum,
-    PaginatedRecipesDto,
-    RecipeCategoryEnum,
-    RecipeFilters,
-    RecipeResponseDto,
-    UnitEnum,
-    UpdateRecipeDto,
+  CreateRecipeDto,
+  HealthScoreEnum,
+  PaginatedRecipesDto,
+  RecipeCategoryEnum,
+  RecipeFilters,
+  RecipeResponseDto,
+  UnitEnum,
+  UpdateRecipeDto,
 } from "../dto/recipe.dto"
 import { RecipeRepository } from "../repositories/recipe.repository"
 import { RecipeWithRelations } from "../types/recipe.types"
@@ -46,7 +46,7 @@ export class RecipeService {
 
   async create(
     data: CreateRecipeDto,
-    userId: string,
+    userId: string
   ): Promise<RecipeResponseDto> {
     const recipe = await this.repository.create({
       title: data.title,
@@ -66,7 +66,7 @@ export class RecipeService {
   async update(
     id: string,
     data: UpdateRecipeDto,
-    requesterId: string,
+    requesterId: string
   ): Promise<RecipeResponseDto> {
     const existing = await this.repository.findById(id)
     if (!existing) throw new NotFoundError(`Recipe ${id} not found`)

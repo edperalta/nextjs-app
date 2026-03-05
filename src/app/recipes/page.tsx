@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { authClient } from "@/lib/auth/auth-client"
+// import { authClient } from "@/lib/auth/auth-client"
 import {
   CreateRecipeDto,
   PaginatedRecipesDto,
@@ -33,8 +33,8 @@ const EMPTY_PAGE: PaginatedRecipesDto = {
 }
 
 export default function RecipesPage() {
-  const { data: sessionData } = authClient.useSession()
-  const currentUserId = sessionData?.user?.id
+  // const { data: sessionData } = authClient.useSession()
+  // const currentUserId = sessionData?.user?.id
 
   const [result, setResult] = React.useState<PaginatedRecipesDto>(EMPTY_PAGE)
   const [loading, setLoading] = React.useState(true)
@@ -141,10 +141,10 @@ export default function RecipesPage() {
   }
 
   const handleOpenForm = () => {
-    if (!currentUserId) {
-      toast.error("You must be logged in to create a recipe")
-      return
-    }
+    // if (!currentUserId) {
+    //   toast.error("You must be logged in to create a recipe")
+    //   return
+    // }
     setShowForm(true)
   }
 
@@ -228,7 +228,7 @@ export default function RecipesPage() {
               onView={(r) => setViewingRecipe(r)}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              currentUserId={currentUserId}
+              // currentUserId={currentUserId}
             />
           )}
         </div>
@@ -242,7 +242,7 @@ export default function RecipesPage() {
         onClose={() => setViewingRecipe(null)}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        currentUserId={currentUserId}
+        // currentUserId={currentUserId}
       />
 
       {/* Delete Confirmation Dialog */}

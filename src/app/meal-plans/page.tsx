@@ -13,7 +13,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { authClient } from "@/lib/auth/auth-client"
+// import { authClient } from "@/lib/auth/auth-client"
 import {
     CreateMealPlanDto,
     MealPlanResponseDto,
@@ -41,8 +41,8 @@ export default function MealPlansPage() {
 }
 
 function MealPlansContent() {
-  const { data: sessionData } = authClient.useSession()
-  const currentUserId = sessionData?.user?.id
+//   const { data: sessionData } = authClient.useSession()
+//   const currentUserId = sessionData?.user?.id
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -176,13 +176,13 @@ function MealPlansContent() {
             </div>
             {!showForm && (
               <Button
-                onClick={() => {
-                  if (!currentUserId) {
-                    toast.error("You must be logged in to create a meal plan")
-                    return
-                  }
-                  setShowForm(true)
-                }}
+                // onClick={() => {
+                //   if (!currentUserId) {
+                //     toast.error("You must be logged in to create a meal plan")
+                //     return
+                //   }
+                //   setShowForm(true)
+                // }}
                 size="lg"
                 className="w-full sm:w-auto"
               >
@@ -225,7 +225,7 @@ function MealPlansContent() {
               onSearch={handleSearch}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              currentUserId={currentUserId}
+            //   currentUserId={currentUserId}
             />
           )}
         </div>
