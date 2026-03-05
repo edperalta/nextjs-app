@@ -55,6 +55,7 @@ export const auth = betterAuth({
             },
         },
     },
+    trustHost: true, // Required for correct URL generation behind proxies (e.g. Vercel)
 })
 
 export type Auth = typeof auth;
