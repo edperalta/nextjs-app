@@ -56,6 +56,7 @@ export const auth = betterAuth({
         },
     },
     trustHost: true, // Required for correct URL generation behind proxies (e.g. Vercel)
+    logLevel: "debug", // Set to "error" in production
 })
 
 export type Auth = typeof auth;
