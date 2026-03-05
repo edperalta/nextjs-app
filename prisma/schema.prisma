@@ -151,8 +151,8 @@ model Recipe {
   category     RecipeCategory
   healthScore  HealthScore        @map("health_score")
   userId       String             @map("user_id")
-  // Semantic search embedding (1536 dims — OpenAI text-embedding-3-small)
-  embedding    Unsupported("vector(1536)")? @map("embedding")
+  // Semantic search embedding (3072 dims — Ollama phi3-mini)
+  embedding    Unsupported("vector(3072)")? @map("embedding")
   user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   ingredients     RecipeIngredient[]
   mealPlanEntries MealPlanEntry[]
