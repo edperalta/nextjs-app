@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       // GitHub OAuth avatars
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
     ],
+    domains: ["eled.pro"],
   },
   output: "standalone",
 };
