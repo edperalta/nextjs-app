@@ -58,7 +58,11 @@ export const auth = betterAuth({
     trustHost: true, // Required for correct URL generation behind proxies (e.g. Vercel)
     logger:{
         level: "debug"
-    }
+    },
+    trustedOrigins: [
+        "http://localhost:3000",
+        "https://meals.eled.pro",
+    ]
 })
 
 export type Auth = typeof auth;
