@@ -4,14 +4,11 @@
  * Populates the database with initial data for development and testing.
  * Run with: npm run prisma:seed
  *
- * Uses better-auth's API to create users so that password hashing and
- * Account records (providerId = "credential") are handled correctly.
- *
  * @see https://www.prisma.io/docs/guides/database/seed-database
  */
 
 import { PrismaClient, Unit, UserRole } from "@prisma/client"
-import { auth } from "../src/lib/auth/auth"
+import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
@@ -95,37 +92,22 @@ async function seedIngredients() {
   await prisma.recipeIngredient.deleteMany()
   await prisma.recipe.deleteMany()
   await prisma.ingredient.deleteMany()
-  await prisma.account.deleteMany()
-  await prisma.session.deleteMany()
   await prisma.user.deleteMany()
   console.log("  ✓ Cleared existing data")
 
   // Seed ingredients
   await seedIngredients()
 
-
   for (const userData of SEED_USERS) {
-    // Use better-auth API so it creates the Account record with hashed password
-    const response = await auth.api.signUpEmail({
-      body: {
+    const hashed = await bcrypt.hash(userData.password, 12)
+    await prisma.user.create({
+      data: {
         name: userData.name,
         email: userData.email,
-        password: userData.password,
+        password: hashed,
+        role: userData.role,
       },
     })
-
-    if (!response?.user) {
-      throw new Error(`Failed to create user: ${userData.email}`)
-    }
-
-    // Assign role via Prisma (better-auth signUpEmail defaults to USER)
-    if (userData.role !== UserRole.USER) {
-      await prisma.user.update({
-        where: { email: userData.email },
-        data: { role: userData.role },
-      })
-    }
-
     console.log(`  ✓ Created user: ${userData.email} (${userData.role})`)
   }
 

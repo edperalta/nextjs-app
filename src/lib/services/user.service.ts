@@ -1,4 +1,5 @@
 import { UserRole } from "@prisma/client"
+import { hashPassword } from "@/lib/auth/auth"
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -38,10 +39,12 @@ export class UserService extends BaseService<
   }
 
   async create(data: CreateUserDto): Promise<UserResponseDto> {
+    const hashed = await hashPassword(data.password)
     const user = await this.repository.create({
       name: data.name,
       email: data.email,
       role: data.role as UserRole,
+      password: hashed,
     })
     return this.toResponseDto(user)
   }

@@ -13,79 +13,24 @@ datasource db {
 }
 
 // ============================================
-// User Model (extended for better-auth)
+// User Model
 // ============================================
 
 model User {
-  id            String   @id @default(cuid())
-  name          String   @db.VarChar(100)
-  email         String   @unique @db.VarChar(255)
-  emailVerified Boolean  @default(false) @map("email_verified")
-  image         String?  @db.Text
-  role          UserRole @default(USER)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.Text
+  image     String?  @db.Text
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  sessions  Session[]
-  accounts  Account[]
   recipes   Recipe[]
   mealPlans MealPlan[]
 
   @@index([email])
   @@map("users")
-}
-
-// ============================================
-// Auth Models (better-auth)
-// ============================================
-
-model Session {
-  id        String   @id @default(cuid())
-  expiresAt DateTime @map("expires_at")
-  token     String   @unique @db.VarChar(255)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  ipAddress String?  @map("ip_address") @db.VarChar(45)
-  userAgent String?  @map("user_agent") @db.Text
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([token])
-  @@map("sessions")
-}
-
-model Account {
-  id                    String    @id @default(cuid())
-  accountId             String    @map("account_id") @db.VarChar(255)
-  providerId            String    @map("provider_id") @db.VarChar(100)
-  userId                String    @map("user_id")
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?   @map("access_token") @db.Text
-  refreshToken          String?   @map("refresh_token") @db.Text
-  idToken               String?   @map("id_token") @db.Text
-  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
-  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
-  scope                 String?   @db.VarChar(500)
-  password              String?   @db.Text
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
-
-  @@index([userId])
-  @@index([providerId, accountId])
-  @@map("accounts")
-}
-
-model Verification {
-  id         String    @id @default(cuid())
-  identifier String    @db.VarChar(255)
-  value      String    @db.Text
-  expiresAt  DateTime  @map("expires_at")
-  createdAt  DateTime? @default(now()) @map("created_at")
-  updatedAt  DateTime? @updatedAt @map("updated_at")
-
-  @@index([identifier])
-  @@map("verifications")
 }
 
 // ============================================

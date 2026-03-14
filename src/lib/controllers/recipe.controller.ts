@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth/auth"
+import { getSession } from "@/lib/auth/jwt"
 import { NextRequest, NextResponse } from "next/server"
 import {
     createRecipeSchema,
@@ -68,7 +68,7 @@ export class RecipeController extends BaseController {
   }
 
   private async requireSession(request: NextRequest) {
-    const session = await auth.api.getSession({ headers: request.headers })
+    const session = await getSession(request.headers)
     if (!session) throw new UnauthorizedError()
     return session
   }

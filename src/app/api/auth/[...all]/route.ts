@@ -1,8 +1,15 @@
 /**
- * better-auth catch-all API route
- * Handles all auth operations: login, register, OAuth callbacks, session, signout
+ * Fallback for any unmatched /api/auth/* paths.
+ * Specific routes are handled by: login/, register/, logout/, session/
  */
-import { auth } from "@/lib/auth/auth"
-import { toNextJsHandler } from "better-auth/next-js"
+import { NextResponse } from "next/server"
 
-export const { GET, POST } = toNextJsHandler(auth)
+function notFound() {
+  return NextResponse.json(
+    { error: { message: "Not found" } },
+    { status: 404 }
+  )
+}
+
+export const GET = notFound
+export const POST = notFound

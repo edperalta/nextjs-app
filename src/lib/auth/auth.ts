@@ -1,69 +1,27 @@
 /**
- * Auth Server Configuration (better-auth)
+ * Server-side auth utilities (Node.js only — do NOT import in Edge Runtime)
  *
- * Configured with:
- *  - Email/password (bcrypt hashing built-in)
- *  - Google OAuth (optional — requires env vars)
- *  - GitHub OAuth (optional — requires env vars)
- *  - Database sessions via Prisma (more secure than stateless JWT for production)
+ * Provides password hashing via bcryptjs.
+ * JWT / session helpers are re-exported from jwt.ts (Edge-safe).
  */
-import { prisma } from "@/lib/db/prisma"
-import { betterAuth } from "better-auth"
-import { prismaAdapter } from "better-auth/adapters/prisma"
+import bcrypt from "bcryptjs"
 
-export const auth = betterAuth({
-    database: prismaAdapter(prisma, {
-        provider: "postgresql",
-    }),
+export {
+  COOKIE_MAX_AGE,
+  COOKIE_NAME,
+  getSession,
+  signToken,
+  type Session,
+  type TokenPayload,
+} from "@/lib/auth/jwt"
 
-    emailAndPassword: {
-        enabled: true,
-        minPasswordLength: 8,
-        autoSignIn: true,
-    },
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12)
+}
 
-    socialProviders: {
-        ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-            ? {
-                google: {
-                    clientId: process.env.GOOGLE_CLIENT_ID,
-                    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                },
-            }
-            : {}),
-        ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
-            ? {
-                github: {
-                    clientId: process.env.GITHUB_CLIENT_ID,
-                    clientSecret: process.env.GITHUB_CLIENT_SECRET,
-                },
-            }
-            : {}),
-    },
-
-    session: {
-        expiresIn: 60 * 60 * 24 * 7, // 7 days
-        updateAge: 60 * 60 * 24,      // Refresh cookie if session is older than 1 day
-    },
-
-    user: {
-        additionalFields: {
-            role: {
-                type: "string",
-                defaultValue: "USER",
-                input: false, // Clients cannot set their own role
-            },
-        },
-    },
-    trustHost: true, // Required for correct URL generation behind proxies (e.g. Vercel)
-    logger:{
-        level: "debug"
-    },
-    trustedOrigins: [
-        "http://localhost:3000",
-        "https://meals.eled.pro",
-    ]
-})
-
-export type Auth = typeof auth;
-export type Session = typeof auth.$Infer.Session;
+export async function verifyPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return bcrypt.compare(password, hash)
+}

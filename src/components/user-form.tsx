@@ -13,7 +13,7 @@ import {
 } from "@/lib/dto/user.dto"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { type Resolver, useForm } from "react-hook-form"
 
 interface UserFormProps {
   user?: UserResponseDto;
@@ -30,7 +30,9 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<CreateUserDto>({
-    resolver: zodResolver(user ? updateUserSchema : createUserSchema),
+    resolver: zodResolver(
+      user ? updateUserSchema : createUserSchema
+    ) as Resolver<CreateUserDto>,
     defaultValues: user
       ? {
           name: user.name,
@@ -112,6 +114,31 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
             </p>
           )}
         </div>
+
+        {!user && (
+          <div className="space-y-2 sm:col-span-2">
+            <Label
+              htmlFor="password"
+              className="text-sm font-semibold flex items-center gap-1"
+            >
+              🔒 Password
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              {...register("password")}
+              placeholder="Min. 8 characters"
+              disabled={isSubmitting}
+              className="h-11"
+            />
+            {errors.password && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                <span>•</span>
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="space-y-2">
           <Label

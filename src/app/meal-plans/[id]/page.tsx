@@ -1,7 +1,7 @@
 import { Footer } from "@/components/footer"
 import { Navbar } from "@/components/navbar"
 import { Separator } from "@/components/ui/separator"
-import { auth } from "@/lib/auth/auth"
+import { getSession } from "@/lib/auth/jwt"
 import { prisma } from "@/lib/db/prisma"
 import { ArrowLeft, CalendarDays, ShoppingCart, Users } from "lucide-react"
 import { headers } from "next/headers"
@@ -82,7 +82,7 @@ export default async function MealPlanDetailPage({
         },
       },
     }),
-    auth.api.getSession({ headers: await headers() }),
+    getSession(await headers()),
   ])
 
   if (!plan) notFound()
